@@ -26,7 +26,7 @@ I could not find any comprehensive docs about the replay format. To fill this ga
 
 These resources proved useful: 
 
-- the project is inspired by this [gist](https://gist.github.com/santolucito/a01927be45a2a7a8e02ce9a50ddd8e75])
+- the project is inspired by this [gist](https://gist.github.com/santolucito/a01927be45a2a7a8e02ce9a50ddd8e75)
 - the (outdated for DE) docs for the aoe mgx format were useful: https://github.com/stefan-kolb/aoc-mgx-format
   - Events and their fields used in this project are described in [REPLAY_DATA_REFERENCE.md](REPLAY_DATA_REFERENCE.md)
 - the [AoE2 DE replay parser](https://github.com/happyleavesaoc/aoc-mgz) is used here, the sources were useful reference.
