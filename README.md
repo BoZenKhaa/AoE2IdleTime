@@ -3,7 +3,7 @@ This is a project to analyze the idle town center time of Age of Empires 2 playe
 
 Currently, only dark age idle time is analyzed. The results look ok, but it's not yet validated.
 
-To try out, run the 'idle_time.py' script and set the constant `REPLAY` to a path pointing to a replay you want to analyze.
+To try it out, run the 'idle_time.py' script and set the constant `REPLAY` to a path pointing to a replay you want to analyze.
 
 The notebook `dev.ipynb` contains some code snippets that were used to develop the script and analyze the replay files.
 
@@ -16,6 +16,9 @@ The script parses the replay file and extracts the following information:
 - the number of vils and techs dequeued from a TC (from the actions)
 
 Then, it calculates the idle time by adding up the build times of the queued vils and techs and subtracting the build times of the dequeued vils and techs. The result is compared to the time when the player reached feudal age.
+
+### Limitations
+Assumes single TC. So it will probably not work for megarandom starts with two TCs.
 
 ## References
 I could not find any comprehensive docs about the replay format. To fill this gap, I made a reference of the data I needed from in the replay files:

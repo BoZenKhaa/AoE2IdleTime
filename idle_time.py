@@ -8,6 +8,7 @@ from mgz import fast
 from mgz.fast import Operation
 from datetime import timedelta
 
+
 @dataclass
 class TimedAction:
     time: int
@@ -96,16 +97,18 @@ def gather_tc_events_from_game_data(game_data):
     return player_tc_queues
 
 
-FEUDAL_RESEARCH_EPSILON=1000 #
+FEUDAL_RESEARCH_EPSILON = 1000
+
+
 def dark_age_idle_time(player_info: PlayerAgeInfo):
     """
-    Proof of concept for the dark age idle time calculation.
+    Proof of concept for the dark age idle time calculation. Assumes single TC.
 
     Rules:
       - cancellations AFTER starting researching last feudal are not relevant
       - cancellations BEFORE starting researching last feudal are
       - stuff in queue before last feudal research is relevant
-      - stuff in queue after last feudal research is not relevant
+      - stuff in queue after last feudal research is not relevant (except for cancellations)
 
     The function does following:
     - get a list of queued vils, techs and cancellations before the feudal research actually started
@@ -118,8 +121,9 @@ def dark_age_idle_time(player_info: PlayerAgeInfo):
 
     feudal_research_start_time = player_info.age_time[Ages.FEUDAL] - BUILD_TIMES[EntityIDs.FEUDAL_AGE.value]
 
-    queue_before_starting_feudal_research = list(filter(lambda ta: ta.time <= feudal_research_start_time + FEUDAL_RESEARCH_EPSILON,
-                                                        dark_age_queue))  # If feudal message is sent after reaching feudal, then this should always include the last feudal research as well. TODO: confirm this
+    # If feudal message is sent after reaching feudal, then this queue should always include the last feudal research as well. This does not seem to be the case, hence the EPSILON.
+    queue_before_starting_feudal_research = list(
+        filter(lambda ta: ta.time <= feudal_research_start_time + FEUDAL_RESEARCH_EPSILON, dark_age_queue))
 
     feudal_research_queue_indeces = []
     for i, ta in enumerate(queue_before_starting_feudal_research):
@@ -127,7 +131,7 @@ def dark_age_idle_time(player_info: PlayerAgeInfo):
             feudal_research_queue_indeces.append(i)
 
     feudal_tech_queue_index = feudal_research_queue_indeces[-1]
-    unfinished_feudal_research_count = len(feudal_research_queue_indeces) - 1 # 1 for the finished research
+    unfinished_feudal_research_count = len(feudal_research_queue_indeces) - 1  # 1 for the finished research
 
     relevant_queued_vill_count = 0
     relevant_queued_loom_count = 0
@@ -144,9 +148,8 @@ def dark_age_idle_time(player_info: PlayerAgeInfo):
     logging.info(
         f"Dark age queue:\n vils: {relevant_queued_vill_count},\n loom: {relevant_queued_loom_count},\n unfinished feudal researches: {unfinished_feudal_research_count},\n cancellations: {relevant_cancellations}")
 
-    tc_dark_busy_time = (
-                                relevant_queued_loom_count + relevant_queued_vill_count + unfinished_feudal_research_count - relevant_cancellations) * \
-                        BUILD_TIMES[EntityIDs.VILLAGER.value]
+    tc_dark_busy_time = (relevant_queued_loom_count + relevant_queued_vill_count + unfinished_feudal_research_count
+                         - relevant_cancellations) * BUILD_TIMES[EntityIDs.VILLAGER.value] # there must be more cancellations than unfinished feudal researches
 
     idle_time_dark = player_info.age_time[Ages.FEUDAL] - tc_dark_busy_time
     logging.info(f"Dark age idle time: {timedelta(milliseconds=idle_time_dark)}")
