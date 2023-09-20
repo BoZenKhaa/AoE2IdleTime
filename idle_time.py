@@ -97,7 +97,7 @@ def gather_tc_events_from_game_data(game_data):
     return player_tc_queues
 
 
-FEUDAL_RESEARCH_EPSILON = 1000
+FEUDAL_RESEARCH_EPSILON = 100
 
 
 def dark_age_idle_time(player_info: PlayerAgeInfo):
@@ -149,10 +149,11 @@ def dark_age_idle_time(player_info: PlayerAgeInfo):
         f"Dark age queue:\n vils: {relevant_queued_vill_count},\n loom: {relevant_queued_loom_count},\n unfinished feudal researches: {unfinished_feudal_research_count},\n cancellations: {relevant_cancellations}")
 
     tc_dark_busy_time = (relevant_queued_loom_count + relevant_queued_vill_count + unfinished_feudal_research_count
-                         - relevant_cancellations) * BUILD_TIMES[EntityIDs.VILLAGER.value] # there must be more cancellations than unfinished feudal researches
+                         - relevant_cancellations) * BUILD_TIMES[EntityIDs.VILLAGER.value]  # there must be more cancellations than unfinished feudal researches
 
-    idle_time_dark = player_info.age_time[Ages.FEUDAL] - tc_dark_busy_time
+    idle_time_dark = player_info.age_time[Ages.FEUDAL] - tc_dark_busy_time - BUILD_TIMES[EntityIDs.FEUDAL_AGE.value]
     logging.info(f"Dark age idle time: {timedelta(milliseconds=idle_time_dark)}")
+    logging.info(f"Feudal age time: {timedelta(milliseconds=player_info.age_time[Ages.FEUDAL])}")
     return idle_time_dark
 
 
@@ -161,7 +162,8 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
 
-    REPLAY = 'data/SP_timed_replay.aoe2record'
+    # REPLAY = 'data/AgeIIDE_Replay_257930563.aoe2record'
+    REPLAY = 'data/AgeIIDE_Replay_260151040.aoe2record'
 
     game_data = load_replay(REPLAY)
     player_infos = gather_tc_events_from_game_data(game_data)
